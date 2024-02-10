@@ -1,0 +1,25 @@
+Need to build URL shortening API similar to https://tinyurl.com/app
+focus on api
+service should be able to take a long URL e.g. “https://foobar.com/my_super_long_url_that_no_one_remembers” and return a unique shortened URL that when accessed will redirect the requester to the original long URL
+
+Record statistics for the original URL
+
+use Nest framework, with in memory database
+use tests
+
+Tasks:
+1. Build an API endpoint that accepts a long URL as its input and ultimately returns a short
+URL that when accessed will redirect the user to the original long URL
+2. When the short URL is accessed you should store statistics about its use against the
+original URL. Think of this as a scoreboard for all of the short URLs, how many times are
+they accessed, where are they accessed from, by what unique users
+3. Build an API endpoint that will return the URLs and their stored statics. Just imagine we
+have a UI that will present a list of URLs alongside its statistics like a scoreboard
+
+steps to install:
+    # Create a new Nest project
+    $ npm i -g @nestjs/cli
+    $ nest new url-shortener-api
+    cd into new project
+    sudo npm install
+    npm run start
