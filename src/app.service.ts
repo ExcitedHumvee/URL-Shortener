@@ -1,42 +1,96 @@
 import { Injectable } from '@nestjs/common';
 
+interface URLInfo {
+  longURL: string;
+  statistic: number;
+}
+
+class URLMap {
+  private map: Map<string, URLInfo>;
+
+  constructor() {
+    this.map = new Map<string, URLInfo>();
+  }
+
+  set(key: string, value: URLInfo): void {
+    this.map.set(key, value);
+  }
+
+  get(key: string): URLInfo | undefined {
+    return this.map.get(key);
+  }
+
+  has(key: string): boolean {
+    return this.map.has(key);
+  }
+
+  delete(key: string): boolean {
+    return this.map.delete(key);
+  }
+
+  clear(): void {
+    this.map.clear();
+  }
+
+  get size(): number {
+    return this.map.size;
+  }
+
+  entries(): IterableIterator<[string, URLInfo]> {
+    return this.map.entries();
+  }
+
+  keys(): IterableIterator<string> {
+    return this.map.keys();
+  }
+
+  values(): IterableIterator<URLInfo> {
+    return this.map.values();
+  }
+
+  forEach(callbackfn: (value: URLInfo, key: string, map: URLMap) => void): void {
+    this.map.forEach((value, key) => {
+      callbackfn(value, key, this);
+    });
+  }
+}
+
 @Injectable()
 export class AppService {
-  private urlMappings = new Map<string, { originalUrl: string, stats: any }>();
+  private urlMap = new URLMap();
 
   getHello(): string {
     return 'Hello World!';
   }
 
-  async shortenUrl(longUrl: string): Promise<string> {
+  async shortenUrl(input: string): Promise<string> {
     // Generate short URL and store mapping
-    const shortUrl = 'generated_short_url';
-    this.urlMappings.set(shortUrl, { originalUrl: longUrl, stats: {} });
+    const shortUrl = "generated_short_url";
+    this.urlMap.set(shortUrl, { longURL: input, statistic: 0 });
+    const record = this.urlMap.get("generated_short_url");
     return shortUrl;
   }
 
   async getOriginalUrl(shortUrl: string): Promise<string> {
     // Retrieve original URL from mapping
     console.log("inside getOriginalUrl service");
-    console.log("shortUrl input supplied:"+shortUrl);
-    console.log(this.urlMappings);
-    const mapping = this.urlMappings.get(shortUrl);
-    if (!mapping) {
+    const map = this.urlMap.get(shortUrl);
+    if (!map) {
       throw new Error('Short URL not found');
     }
     // Update statistics
-    mapping.stats.accessCount = (mapping.stats.accessCount || 0) + 1;
+    map.statistic = map.statistic + 1;
     // You can add more detailed statistics like access location, user, etc.
-    return mapping.originalUrl;
+    return map.longURL;
   }
 
   async getStats(shortUrl: string): Promise<any> {
     // Retrieve statistics for a short URL
-    const mapping = this.urlMappings.get(shortUrl);
-    if (!mapping) {
+    const map = this.urlMap.get(shortUrl);
+    if (!map) {
       throw new Error('Short URL not found');
     }
-    return mapping.stats;
+    return map.statistic;
   }
 
 }
