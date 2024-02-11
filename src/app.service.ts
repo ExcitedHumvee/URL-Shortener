@@ -67,7 +67,8 @@ export class AppService {
 
 	async shortenUrl(input: string): Promise < string > {
 		// Generate short URL and store mapping
-		const shortUrl = "generated_short_url";
+		//shortUrl is a random string length 5 alphanumic characters
+		const shortUrl = [...Array(5)].map(() => Math.random().toString(36)[2]).join('');
 		this.urlMap.set(shortUrl, {
 			longURL: input,
 			statistic: 0
