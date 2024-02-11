@@ -13,6 +13,8 @@ import {
 import {
 	Response
 } from 'express';
+import { ApiBody } from '@nestjs/swagger';
+import { ShortenUrlDto } from './app.dto';
 
 @Controller()
 export class AppController {
@@ -24,8 +26,9 @@ export class AppController {
 	}
 
 	@Post('shorten') // Adjust route path if necessary
-	async shortenUrl(@Body('longUrl') longUrl: string): Promise < string > {
-		return this.appService.shortenUrl(longUrl);
+	@ApiBody({ type: ShortenUrlDto })
+	async shortenUrl(@Body() body: ShortenUrlDto): Promise < string > {
+		return this.appService.shortenUrl(body.longUrl);
 	}
 
 	@Get('redirect-to-facebook')
