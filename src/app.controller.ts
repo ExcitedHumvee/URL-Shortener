@@ -15,6 +15,7 @@ import {
 } from 'express';
 import { ApiBody } from '@nestjs/swagger';
 import { ShortenUrlDto } from './app.dto';
+import { URLMap } from './URLMap';
 
 @Controller()
 export class AppController {
@@ -39,6 +40,16 @@ export class AppController {
 		res.status(HttpStatus.FOUND).redirect(targetUrl);
 	}
 
+	@Get('urls')
+    async getAllURLs(): Promise<URLMap[]> {
+        return this.appService.getAllURLs();
+    }
+
+	@Get(':shortUrl/stats') // Adjust route path if necessary
+	async getStats(@Param('shortUrl') shortUrl: string) {
+		return this.appService.getStats(shortUrl);
+	}
+
 	@Get(':shortUrl') // Adjust route path if necessary
 	async redirectToOriginal(@Param('shortUrl') shortUrl: string, @Res() res: Response) {
 		console.log("inside redirectToOriginal controller");
@@ -46,8 +57,4 @@ export class AppController {
 		res.status(HttpStatus.FOUND).redirect(targetUrl);
 	}
 
-	@Get(':shortUrl/stats') // Adjust route path if necessary
-	async getStats(@Param('shortUrl') shortUrl: string) {
-		return this.appService.getStats(shortUrl);
-	}
 }
