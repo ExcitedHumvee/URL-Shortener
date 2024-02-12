@@ -32,14 +32,6 @@ export class AppController {
 		return this.appService.shortenUrl(body.longUrl);
 	}
 
-	@Get('redirect-to-facebook')
-	async redirectToFacebook(@Res() res: Response) {
-		const targetUrl = 'http://facebook.com';
-		console.log(targetUrl);
-		console.log(typeof targetUrl);
-		res.status(HttpStatus.FOUND).redirect(targetUrl);
-	}
-
 	@Get('urls')
     async getAllURLs(): Promise<URLMap[]> {
         return this.appService.getAllURLs();
