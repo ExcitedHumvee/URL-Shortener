@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { Sequelize, DataTypes } from 'sequelize';
-import { URLMap } from './URLMap';
+import { Sequelize, DataTypes, Model } from 'sequelize';
 
-interface URLInfo {
-  longURL: string;
-  statistic: number;
+export class URLMap extends Model {
+	public id!: number;
+	public shortURL!: string;
+	public longURL!: string;
+	public visitorCount!: number; // Renamed from statistic
+	public aliasURL!: string | null; // New field
+	public isActive!: boolean; // New field
+	public requestLimit!: number; // New field
 }
 
 @Injectable()
@@ -30,7 +34,22 @@ export class AppService {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      statistic: {
+      visitorCount: { // Renamed from statistic
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      aliasURL: { // New field
+        type: DataTypes.STRING,
+        allowNull: true, // Nullable
+        unique: true, // Unique constraint
+      },
+      isActive: { // New field
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+      requestLimit: { // New field
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0,
@@ -56,19 +75,19 @@ export class AppService {
     await this.urlMap.create({
       shortURL: shortUrl,
       longURL: input,
-      statistic: 0,
+      visitorCount: 0,
     });
     return shortUrl;
   }
 
-  async getOriginalUrl(shortUrl: string): Promise<string> {
+  async getOriginalUrl(shortUrl: string,ipAddress: string): Promise<string> {
     // Retrieve original URL from mapping
     const map = await this.urlMap.findOne({ where: { shortURL: shortUrl } });
     if (!map) {
       throw new Error('Short URL not found');
     }
     // Update statistics
-    await map.increment('statistic');
+    await map.increment('visitorCount');
     // You can add more detailed statistics like access location, user, etc.
     return map.longURL;
   }
@@ -79,7 +98,7 @@ export class AppService {
     if (!map) {
       throw new Error('Short URL not found');
     }
-    return map.statistic;
+    return map.visitorCount;
   }
 
   async getAllURLs(): Promise<URLMap[]> {

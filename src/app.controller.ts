@@ -1,9 +1,8 @@
 import { Controller, Get, Post, Body, Param, Res, HttpStatus } from '@nestjs/common';
-import { AppService } from './app.service';
+import { AppService, URLMap } from './app.service';
 import { Response } from 'express';
 import { ApiBody } from '@nestjs/swagger';
 import { ShortenUrlDto } from './app.dto';
-import { URLMap } from './URLMap';
 
 @Controller()
 export class AppController {
@@ -33,7 +32,9 @@ export class AppController {
   @Get(':shortUrl') // Adjust route path if necessary
   async redirectToOriginal(@Param('shortUrl') shortUrl: string, @Res() res: Response) {
     console.log("inside redirectToOriginal controller");
-    const targetUrl = await this.appService.getOriginalUrl(shortUrl) as string;
+    const ipAddress = res.req.ip; // Access the IP address from the request object
+    console.log(`Incoming IP address: ${ipAddress}`);
+    const targetUrl = await this.appService.getOriginalUrl(shortUrl,ipAddress) as string;
     res.status(HttpStatus.FOUND).redirect(targetUrl);
   }
 }
