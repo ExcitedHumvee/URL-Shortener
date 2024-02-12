@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Sequelize, DataTypes, Model } from 'sequelize';
+import { UpdateUrlDto } from './app.dto';
 
 export class URLMap extends Model {
 	public id!: number;
@@ -69,23 +70,42 @@ export class AppService {
     return 'Hello World!';
   }
 
-  async shortenUrl(input: string): Promise<string> {
-    // Generate short URL and store mapping
+  async shortenUrl(input: string, aliasURL?: string, requestLimit: number = 0): Promise<string> { // Default requestLimit to 0
+    // Generate short URL and store mapping with requestLimit
     const shortUrl = [...Array(5)].map(() => Math.random().toString(36)[2]).join('');
     await this.urlMap.create({
       shortURL: shortUrl,
       longURL: input,
       visitorCount: 0,
+      aliasURL: aliasURL || null,
+      requestLimit: requestLimit, // Include requestLimit
     });
     return shortUrl;
   }
 
-  async getOriginalUrl(shortUrl: string,ipAddress: string): Promise<string> {
-    // Retrieve original URL from mapping
-    const map = await this.urlMap.findOne({ where: { shortURL: shortUrl } });
+  async getOriginalUrl(shortUrl: string, ipAddress: string): Promise<string> {
+    // First, try to find the shortURL in the URLMap model
+    let map = await this.urlMap.findOne({ where: { shortURL: shortUrl } });
+
+    // If not found, try to find it in the aliasURLs
     if (!map) {
-      throw new Error('Short URL not found');
+      map = await this.urlMap.findOne({ where: { aliasURL: shortUrl } });
     }
+
+    if (!map) {
+      throw new Error('Short URL or alias not found');
+    }
+
+    // Check if requestLimit is set and if the visitorCount has reached the limit
+    if (map.requestLimit && map.visitorCount >= map.requestLimit) {
+      throw new Error('Request limit reached for this URL');
+    }
+
+    // Check if the URL is active
+    if (!map.isActive) {
+      throw new Error('This link has been deleted');
+    }
+
     // Update statistics
     await map.increment('visitorCount');
     // You can add more detailed statistics like access location, user, etc.
@@ -94,15 +114,58 @@ export class AppService {
 
   async getStats(shortUrl: string): Promise<any> {
     // Retrieve statistics for a short URL
-    const map = await this.urlMap.findOne({ where: { shortURL: shortUrl } });
+    let map = await this.urlMap.findOne({ where: { shortURL: shortUrl } });
+    // If not found, try to find it in the aliasURLs
     if (!map) {
-      throw new Error('Short URL not found');
+      map = await this.urlMap.findOne({ where: { aliasURL: shortUrl } });
     }
-    return map.visitorCount;
+    if (!map) {
+      throw new Error('Short URL or alias not found');
+    }
+    return map;
   }
 
   async getAllURLs(): Promise<URLMap[]> {
     // Retrieve all records from the URLMap table
     return await this.urlMap.findAll();
+  }
+
+  async updateUrl(updateUrlDto: UpdateUrlDto): Promise<string> {
+    const { shortURL, requestLimit, alias } = updateUrlDto;
+
+    // Find the URLMap entry
+    const urlMapEntry = await this.urlMap.findOne({ where: { shortURL } });
+
+    if (!urlMapEntry) {
+      throw new Error('URL not found');
+    }
+
+    // Update the URLMap entry
+    if (requestLimit !== undefined) {
+      urlMapEntry.requestLimit = requestLimit;
+    }
+
+    if (alias !== undefined) {
+      urlMapEntry.aliasURL = alias;
+    }
+
+    // Save changes
+    await urlMapEntry.save();
+
+    return 'URL updated successfully';
+  }
+
+  async deleteUrl(shortURL: string): Promise<string> {
+    const urlMapEntry = await this.urlMap.findOne({ where: { shortURL } });
+
+    if (!urlMapEntry) {
+      throw new Error('URL not found');
+    }
+
+    // Set isActive to false
+    urlMapEntry.isActive = false;
+    await urlMapEntry.save();
+
+    return 'URL deleted successfully';
   }
 }

@@ -28,3 +28,6 @@ to build docker image, make sure docker engine is running by opening docker desk
     docker build -t stanydesa/nest-app .
     docker run -d -p 3000:3000 stanydesa/nest-app
     docker ps to check status
+
+TODO:
+    proper errors should be thrown to frontend

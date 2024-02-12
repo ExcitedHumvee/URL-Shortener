@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Param, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Res, HttpStatus } from '@nestjs/common';
 import { AppService, URLMap } from './app.service';
 import { Response } from 'express';
 import { ApiBody } from '@nestjs/swagger';
-import { ShortenUrlDto } from './app.dto';
+import { DeleteUrlDto, ShortenUrlDto, UpdateUrlDto } from './app.dto';
 
 @Controller()
 export class AppController {
@@ -15,8 +15,8 @@ export class AppController {
 
   @Post('shorten') 
   @ApiBody({ type: ShortenUrlDto })
-  async shortenUrl(@Body() body: ShortenUrlDto): Promise < string > {
-    return this.appService.shortenUrl(body.longUrl);
+  async shortenUrl(@Body() body: ShortenUrlDto): Promise<string> {
+    return this.appService.shortenUrl(body.longUrl, body.aliasURL, body.requestLimit || 0); // Default requestLimit to 0 if not provided
   }
 
   @Get('urls')
@@ -25,7 +25,7 @@ export class AppController {
     }
 
   @Get(':shortUrl/stats') 
-  async getStats(@Param('shortUrl') shortUrl: string) {
+  async getStats(@Param('shortUrl') shortUrl: string): Promise<URLMap> {
     return this.appService.getStats(shortUrl);
   }
 
@@ -36,5 +36,15 @@ export class AppController {
     console.log(`Incoming IP address: ${ipAddress}`);
     const targetUrl = await this.appService.getOriginalUrl(shortUrl,ipAddress) as string;
     res.status(HttpStatus.FOUND).redirect(targetUrl);
+  }
+
+  @Put('urlMap')
+  async updateUrlMap(@Body() updateUrlDto: UpdateUrlDto): Promise<string> {
+    return this.appService.updateUrl(updateUrlDto);
+  }
+
+  @Delete('urlMap')
+  async deleteUrl(@Body() deleteUrlDto: DeleteUrlDto): Promise<string> {
+    return this.appService.deleteUrl(deleteUrlDto.shortURL);
   }
 }
