@@ -112,7 +112,7 @@ export class AppService {
     return map.longURL;
   }
 
-  async getStats(shortUrl: string): Promise<any> {
+  async getVisitorCount(shortUrl: string): Promise<any> {
     // Retrieve statistics for a short URL
     let map = await this.urlMap.findOne({ where: { shortURL: shortUrl } });
     // If not found, try to find it in the aliasURLs
@@ -130,7 +130,7 @@ export class AppService {
     return await this.urlMap.findAll();
   }
 
-  async updateUrl(updateUrlDto: UpdateUrlDto): Promise<string> {
+  async updateUrlMap(updateUrlDto: UpdateUrlDto): Promise<string> {
     const { shortURL, requestLimit, alias } = updateUrlDto;
 
     // Find the URLMap entry
@@ -155,7 +155,7 @@ export class AppService {
     return 'URL updated successfully';
   }
 
-  async deleteUrl(shortURL: string): Promise<string> {
+  async deleteUrlMap(shortURL: string): Promise<string> {
     const urlMapEntry = await this.urlMap.findOne({ where: { shortURL } });
 
     if (!urlMapEntry) {

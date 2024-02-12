@@ -13,20 +13,20 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Post('shorten') 
+  @Post('shortenUrl') 
   @ApiBody({ type: ShortenUrlDto })
   async shortenUrl(@Body() body: ShortenUrlDto): Promise<string> {
     return this.appService.shortenUrl(body.longUrl, body.aliasURL, body.requestLimit || 0); // Default requestLimit to 0 if not provided
   }
 
-  @Get('urls')
+  @Get('urlMaps')
     async getAllURLs(): Promise<URLMap[]> {
         return this.appService.getAllURLs();
     }
 
-  @Get(':shortUrl/stats') 
+  @Get(':shortUrl/visitorCount') 
   async getStats(@Param('shortUrl') shortUrl: string): Promise<URLMap> {
-    return this.appService.getStats(shortUrl);
+    return this.appService.getVisitorCount(shortUrl);
   }
 
   @Get(':shortUrl') // Adjust route path if necessary
@@ -40,11 +40,11 @@ export class AppController {
 
   @Put('urlMap')
   async updateUrlMap(@Body() updateUrlDto: UpdateUrlDto): Promise<string> {
-    return this.appService.updateUrl(updateUrlDto);
+    return this.appService.updateUrlMap(updateUrlDto);
   }
 
   @Delete('urlMap')
-  async deleteUrl(@Body() deleteUrlDto: DeleteUrlDto): Promise<string> {
-    return this.appService.deleteUrl(deleteUrlDto.shortURL);
+  async deleteUrlMap(@Body() deleteUrlDto: DeleteUrlDto): Promise<string> {
+    return this.appService.deleteUrlMap(deleteUrlDto.shortURL);
   }
 }
