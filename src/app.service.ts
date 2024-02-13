@@ -166,6 +166,7 @@ export class AppService {
       if (existingMap) {
           throw new Error('Alias URL cannot be the same as a short URL');
       }
+      urlMapEntry.aliasURL = alias;
   }
 
     // Save changes

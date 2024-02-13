@@ -42,6 +42,5 @@ TODO:
     logging different errors
     refactoring file structure
     repeated code    
-    
 
     will not do: sonar lint analysis
