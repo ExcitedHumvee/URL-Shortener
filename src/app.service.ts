@@ -210,4 +210,15 @@ export class AppService {
     this.logger.log(`URL deleted: ${shortURL}`);
     return 'URL deleted successfully';
   }
+
+  async deleteAllUrlMaps(): Promise<string> {
+    try {
+      await this.urlMap.destroy({ truncate: true });
+      this.logger.log('All URL maps deleted successfully');
+      return 'All URL maps deleted successfully';
+    } catch (error) {
+      this.logger.error(`Error deleting URL maps: ${error.message}`);
+      throw error;
+    }
+  }
 }

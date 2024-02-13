@@ -1,10 +1,11 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Res, HttpStatus } from '@nestjs/common';
 import { AppService, URLMap } from './app.service';
 import { Response } from 'express';
-import { ApiBody, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeleteUrlDto, GetAllURLsResponseDto, GetStatsResponseDto, ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './dto';
 
 @Controller()
+@ApiTags('URL Map Controller')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
@@ -71,5 +72,14 @@ export class AppController {
   @ApiBody({ type: DeleteUrlDto })
   async deleteUrlMap(@Body() deleteUrlDto: DeleteUrlDto): Promise<string> {
     return this.appService.deleteUrlMap(deleteUrlDto.shortURL);
+  }
+
+  @Delete('urlMaps/deleteAll')
+  @ApiResponse({ 
+    status: 200,
+    description: 'All URL maps deleted successfully',
+  })
+  async deleteAllUrlMaps(): Promise<string> {
+    return this.appService.deleteAllUrlMaps();
   }
 }
