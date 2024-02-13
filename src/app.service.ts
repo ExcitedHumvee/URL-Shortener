@@ -25,6 +25,7 @@ export class AppService {
     this.sequelize = new Sequelize({
       dialect: 'sqlite',
       storage: 'database.sqlite', // or :memory:
+      logging: false,
     });
 
     // Define the URLMap model
@@ -77,6 +78,11 @@ export class AppService {
     this.sequelize.sync();
 
     this.urlMap = URLMap;
+  }
+
+  async onModuleDestroy() {
+    // Close the database connection when the module is destroyed
+    await this.sequelize.close();
   }
 
   getHello(): string {

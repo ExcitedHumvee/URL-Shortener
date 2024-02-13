@@ -27,7 +27,7 @@ steps to install:
 to build docker image, make sure docker engine is running by opening docker desktop then:
     docker build -t stanydesa/nest-app .
     docker run -d -p 3000:3000 stanydesa/nest-app
-    docker ps to check status
+    to check status: docker ps
 
 TODO: 
     create SH script
@@ -35,7 +35,6 @@ TODO:
     unit tests
     refactoring file structure
     advanced error handling of dto
-
     will not do: sonar lint analysis
 
 feautures:
