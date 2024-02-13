@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Res, HttpStatus } from '@nestjs/common';
 import { AppService, URLMap } from './app.service';
 import { Response } from 'express';
-import { ApiBody } from '@nestjs/swagger';
-import { DeleteUrlDto, ShortenUrlDto, UpdateUrlDto } from './app.dto';
+import { ApiBody, ApiResponse } from '@nestjs/swagger';
+import { DeleteUrlDto, ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './app.dto';
 
 @Controller()
 export class AppController {
@@ -15,14 +15,20 @@ export class AppController {
 
   @Post('shortenUrl') 
   @ApiBody({ type: ShortenUrlDto })
-  async shortenUrl(@Body() body: ShortenUrlDto): Promise<string> {
-    return this.appService.shortenUrl(body.longUrl, body.aliasURL, body.requestLimit || 0); // Default requestLimit to 0 if not provided
+  @ApiResponse({ 
+    status: 201,
+    description: 'The URL has been successfully shortened.',
+    type: ShortenedUrlResponseDto,
+  })
+  async shortenUrl(@Body() body: ShortenUrlDto): Promise<ShortenedUrlResponseDto> {
+    const shortUrl = await this.appService.shortenUrl(body); // Default requestLimit to 0 if not provided
+    return shortUrl;
   }
 
   @Get('urlMaps')
-    async getAllURLs(): Promise<URLMap[]> {
-        return this.appService.getAllURLs();
-    }
+  async getAllURLs(): Promise<URLMap[]> {
+      return this.appService.getAllURLs();
+  }
 
   @Get(':shortUrl/visitorCount') 
   async getStats(@Param('shortUrl') shortUrl: string): Promise<URLMap> {

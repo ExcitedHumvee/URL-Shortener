@@ -31,7 +31,6 @@ to build docker image, make sure docker engine is running by opening docker desk
 
 TODO:
     proper errors should be thrown to frontend
-    DB checking Database Constraints: Leverage database features such as unique constraints, foreign key constraints, check constraints, and indexes to enforce data integrity at the database level.
     remove cats from swagger
         proper input and output of each api
         validation inside the apis
@@ -44,3 +43,6 @@ TODO:
     repeated code    
 
     will not do: sonar lint analysis
+
+feautures:
+    DB checking Database Constraints: Leverage database features such as unique constraints, foreign key constraints, check constraints, and indexes to enforce data integrity at the database level.

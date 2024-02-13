@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Sequelize, DataTypes, Model } from 'sequelize';
-import { UpdateUrlDto } from './app.dto';
+import { ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './app.dto';
+import { AliasConflictException, InvalidRequestLimitException, InvalidURLException } from './exceptions';
 
 export class URLMap extends Model {
 	public id!: number;
@@ -80,22 +81,34 @@ export class AppService {
     return 'Hello World!';
   }
 
-  async shortenUrl(input: string, aliasURL?: string, requestLimit: number = 0): Promise<string> { // Default requestLimit to 0
+  private isValidUrl(url: string): boolean {
+    const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
+    return urlRegex.test(url);
+  }
+
+  async shortenUrl(dto: ShortenUrlDto): Promise<ShortenedUrlResponseDto> { // Default requestLimit to 0
+    if (!this.isValidUrl(dto.longUrl)) {
+      throw new InvalidURLException();
+    }
+
+    if (dto.requestLimit !=null && dto.requestLimit < 0) {
+      throw new InvalidRequestLimitException();
+    }
     // Check if aliasURL exists in shortURL
-    const existingMap = await this.urlMap.findOne({ where: { shortURL: aliasURL } });
+    const existingMap = await this.urlMap.findOne({ where: { shortURL: dto.aliasURL } });
     if (existingMap) {
-        throw new Error('Alias URL cannot be the same as a short URL');
+      throw new AliasConflictException();
     }
     // Generate short URL and store mapping with requestLimit
     const shortUrl = [...Array(5)].map(() => Math.random().toString(36)[2]).join('');
     await this.urlMap.create({
       shortURL: shortUrl,
-      longURL: input,
+      longURL: dto.longUrl,
       visitorCount: 0,
-      aliasURL: aliasURL || null,
-      requestLimit: requestLimit, // Include requestLimit
+      aliasURL: dto.aliasURL || null,
+      requestLimit: dto.requestLimit, // Include requestLimit
     });
-    return shortUrl;
+    return { shortUrl };
   }
 
   async getOriginalUrl(shortUrl: string, ipAddress: string): Promise<string> {
