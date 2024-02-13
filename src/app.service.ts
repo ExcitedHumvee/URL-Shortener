@@ -57,7 +57,17 @@ export class AppService {
       },
     }, {
       sequelize: this.sequelize,
-      modelName: 'URLMap',
+                modelName: 'URLMap',
+                indexes: [
+                    {
+                        unique: true,
+                        fields: ['shortURL'],
+                    },
+                    {
+                        unique: true,
+                        fields: ['aliasURL'],
+                    },
+                ],
     });
 
     // Synchronize the model with the database
