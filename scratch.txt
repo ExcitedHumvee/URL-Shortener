@@ -30,11 +30,11 @@ to build docker image, make sure docker engine is running by opening docker desk
     to check status: docker ps
 
 to run test cases:
-    npx jest
+    unit testing: npx jest
     install the jest extension by Orta then use cmd palette to jest toggle coverage
+    end to end testing: npm run test:e2e
 
 TODO: 
-    create SH script
     create readme
     unit tests
     refactoring file structure
