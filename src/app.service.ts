@@ -81,6 +81,11 @@ export class AppService {
   }
 
   async shortenUrl(input: string, aliasURL?: string, requestLimit: number = 0): Promise<string> { // Default requestLimit to 0
+    // Check if aliasURL exists in shortURL
+    const existingMap = await this.urlMap.findOne({ where: { shortURL: aliasURL } });
+    if (existingMap) {
+        throw new Error('Alias URL cannot be the same as a short URL');
+    }
     // Generate short URL and store mapping with requestLimit
     const shortUrl = [...Array(5)].map(() => Math.random().toString(36)[2]).join('');
     await this.urlMap.create({
@@ -155,9 +160,13 @@ export class AppService {
       urlMapEntry.requestLimit = requestLimit;
     }
 
-    if (alias !== undefined) {
-      urlMapEntry.aliasURL = alias;
-    }
+    // Check if alias is provided and conflicts with existing shortURL
+    if (alias) {
+      const existingMap = await this.urlMap.findOne({ where: { shortURL: alias } });
+      if (existingMap) {
+          throw new Error('Alias URL cannot be the same as a short URL');
+      }
+  }
 
     // Save changes
     await urlMapEntry.save();

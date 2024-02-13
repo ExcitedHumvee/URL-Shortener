@@ -41,6 +41,7 @@ TODO:
     unit tests
     logging different errors
     refactoring file structure
-    repeated code       
+    repeated code    
+    
 
     will not do: sonar lint analysis
