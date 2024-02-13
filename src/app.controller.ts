@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Res, HttpStatus } from
 import { AppService, URLMap } from './app.service';
 import { Response } from 'express';
 import { ApiBody, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { DeleteUrlDto, GetAllURLsResponseDto, GetStatsResponseDto, ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './app.dto';
+import { DeleteUrlDto, GetAllURLsResponseDto, GetStatsResponseDto, ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './dto';
 
 @Controller()
 export class AppController {

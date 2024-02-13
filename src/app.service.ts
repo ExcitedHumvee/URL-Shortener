@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Sequelize, DataTypes, Model } from 'sequelize';
-import { ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './app.dto';
+import { ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './dto';
 import { AliasConflictException, DeletedLinkException, EmptyShortUrlException, InvalidRequestLimitException, InvalidURLException, RequestLimitReachedException, ShortUrlNotFoundException, ShortUrlOrAliasNotFoundException } from './exceptions';
 
 

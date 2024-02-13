@@ -30,12 +30,10 @@ to build docker image, make sure docker engine is running by opening docker desk
     docker ps to check status
 
 TODO: 
-    
     create SH script
     create readme
     unit tests
     refactoring file structure
-    repeated code    
     advanced error handling of dto
 
     will not do: sonar lint analysis
@@ -47,3 +45,4 @@ feautures:
     proper errors should be thrown to frontend
     logging
     logging different errors
+    repeated code  
