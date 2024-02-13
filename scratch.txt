@@ -30,11 +30,10 @@ to build docker image, make sure docker engine is running by opening docker desk
     docker ps to check status
 
 TODO: 
-    logging
+    
     create SH script
     create readme
     unit tests
-    logging different errors
     refactoring file structure
     repeated code    
     advanced error handling of dto
@@ -46,3 +45,5 @@ feautures:
     proper input and output of each api
     validation inside the apis
     proper errors should be thrown to frontend
+    logging
+    logging different errors

@@ -1,7 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Sequelize, DataTypes, Model } from 'sequelize';
 import { ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './app.dto';
 import { AliasConflictException, DeletedLinkException, EmptyShortUrlException, InvalidRequestLimitException, InvalidURLException, RequestLimitReachedException, ShortUrlNotFoundException, ShortUrlOrAliasNotFoundException } from './exceptions';
+
 
 export class URLMap extends Model {
 	public id!: number;
@@ -17,6 +18,7 @@ export class URLMap extends Model {
 export class AppService {
   private sequelize: Sequelize;
   private urlMap: typeof URLMap;
+  private readonly logger = new Logger(AppService.name);
 
   constructor() {
     // Initialize Sequelize
@@ -108,6 +110,7 @@ export class AppService {
       aliasURL: dto.aliasURL || null,
       requestLimit: dto.requestLimit, // Include requestLimit
     });
+    this.logger.log(`URL shortened: ${dto.longUrl} -> ${shortUrl}`);
     return { shortUrl };
   }
 
@@ -137,6 +140,7 @@ export class AppService {
     // Update statistics
     await map.increment('visitorCount');
     // You can add more detailed statistics like access location, user, etc.
+    this.logger.log(`Redirecting to original URL: ${shortUrl} -> ${map.longURL}`);
     return map.longURL;
   }
 
@@ -153,11 +157,13 @@ export class AppService {
     if (!map) {
       throw new ShortUrlOrAliasNotFoundException();
     }
+    this.logger.log(`Retrieved statistics for URL: ${shortUrl}`);
     return map;
   }
 
   async getAllURLs(): Promise<URLMap[]> {
     // Retrieve all records from the URLMap table
+    this.logger.log(`Retrieving all URLs`);
     return await this.urlMap.findAll();
   }
 
@@ -191,6 +197,7 @@ export class AppService {
     // Save changes
     await urlMapEntry.save();
 
+    this.logger.log(`URL updated: ${shortURL}`);
     return 'URL updated successfully';
   }
 
@@ -205,6 +212,7 @@ export class AppService {
     urlMapEntry.isActive = false;
     await urlMapEntry.save();
 
+    this.logger.log(`URL deleted: ${shortURL}`);
     return 'URL deleted successfully';
   }
 }
