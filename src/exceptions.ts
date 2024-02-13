@@ -70,3 +70,14 @@ export class ShortUrlOrAliasNotFoundException extends HttpException {
       super('Short URL or alias not found', HttpStatus.BAD_REQUEST);
     }
 }
+
+export class RequestLimitReachedException extends HttpException {
+    constructor() {
+      super('Request limit reached for this URL', HttpStatus.BAD_REQUEST);
+    }
+}
+export class DeletedLinkException extends HttpException {
+    constructor() {
+      super('This link has been deleted', HttpStatus.BAD_REQUEST);
+    }
+}

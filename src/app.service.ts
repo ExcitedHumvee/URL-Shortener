@@ -1,16 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Sequelize, DataTypes, Model } from 'sequelize';
 import { ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './app.dto';
-import { AliasConflictException, EmptyShortUrlException, InvalidRequestLimitException, InvalidURLException, ShortUrlNotFoundException, ShortUrlOrAliasNotFoundException } from './exceptions';
+import { AliasConflictException, DeletedLinkException, EmptyShortUrlException, InvalidRequestLimitException, InvalidURLException, RequestLimitReachedException, ShortUrlNotFoundException, ShortUrlOrAliasNotFoundException } from './exceptions';
 
 export class URLMap extends Model {
 	public id!: number;
 	public shortURL!: string;
 	public longURL!: string;
-	public visitorCount!: number; // Renamed from statistic
-	public aliasURL!: string | null; // New field
-	public isActive!: boolean; // New field
-	public requestLimit!: number; // New field
+	public visitorCount!: number; 
+	public aliasURL!: string | null; 
+	public isActive!: boolean; 
+	public requestLimit!: number; 
 }
 
 @Injectable()
@@ -36,22 +36,22 @@ export class AppService {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      visitorCount: { // Renamed from statistic
+      visitorCount: { 
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0,
       },
-      aliasURL: { // New field
+      aliasURL: { 
         type: DataTypes.STRING,
         allowNull: true, // Nullable
         unique: true, // Unique constraint
       },
-      isActive: { // New field
+      isActive: { 
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true,
       },
-      requestLimit: { // New field
+      requestLimit: { 
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0,
@@ -121,17 +121,17 @@ export class AppService {
     }
 
     if (!map) {
-      throw new Error('Short URL or alias not found');
+      throw new ShortUrlOrAliasNotFoundException();
     }
 
     // Check if requestLimit is set and if the visitorCount has reached the limit
     if (map.requestLimit && map.visitorCount >= map.requestLimit) {
-      throw new Error('Request limit reached for this URL');
+      throw new RequestLimitReachedException();
     }
 
     // Check if the URL is active
     if (!map.isActive) {
-      throw new Error('This link has been deleted');
+      throw new DeletedLinkException();
     }
 
     // Update statistics
@@ -198,7 +198,7 @@ export class AppService {
     const urlMapEntry = await this.urlMap.findOne({ where: { shortURL } });
 
     if (!urlMapEntry) {
-      throw new Error('URL not found');
+      throw new ShortUrlNotFoundException();
     }
 
     // Set isActive to false

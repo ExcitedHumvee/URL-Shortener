@@ -29,7 +29,7 @@ export class AppController {
   @ApiResponse({ 
     status: 200,
     description: 'Retrieved all URLs successfully.',
-    type: [GetAllURLsResponseDto], // Use the appropriate response DTO
+    type: [GetAllURLsResponseDto],
   })
   async getAllURLs(): Promise<GetAllURLsResponseDto[]> {
     const urls = await this.appService.getAllURLs();
@@ -40,7 +40,7 @@ export class AppController {
   @ApiResponse({
     status: 200,
     description: 'Statistics retrieved successfully',
-    type: GetStatsResponseDto, // Use the appropriate response DTO
+    type: GetStatsResponseDto,
   })
   async getStats(@Param('shortUrl') shortUrl: string): Promise<GetStatsResponseDto> {
     const stats = await this.appService.getStatistics(shortUrl);

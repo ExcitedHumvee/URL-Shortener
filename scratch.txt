@@ -29,20 +29,20 @@ to build docker image, make sure docker engine is running by opening docker desk
     docker run -d -p 3000:3000 stanydesa/nest-app
     docker ps to check status
 
-TODO:
-    proper errors should be thrown to frontend
-    remove cats from swagger
-        proper input and output of each api
-        validation inside the apis
-        error handling and logging
+TODO: 
+    logging
     create SH script
     create readme
     unit tests
     logging different errors
     refactoring file structure
     repeated code    
+    advanced error handling of dto
 
     will not do: sonar lint analysis
 
 feautures:
     DB checking Database Constraints: Leverage database features such as unique constraints, foreign key constraints, check constraints, and indexes to enforce data integrity at the database level.
+    proper input and output of each api
+    validation inside the apis
+    proper errors should be thrown to frontend
