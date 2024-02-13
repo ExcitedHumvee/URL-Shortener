@@ -5,13 +5,13 @@ import { AliasConflictException, DeletedLinkException, EmptyShortUrlException, I
 
 
 export class URLMap extends Model {
-	public id!: number;
-	public shortURL!: string;
-	public longURL!: string;
-	public visitorCount!: number; 
-	public aliasURL!: string | null; 
-	public isActive!: boolean; 
-	public requestLimit!: number; 
+  public id!: number;
+  public shortURL!: string;
+  public longURL!: string;
+  public visitorCount!: number; 
+  public aliasURL!: string | null; 
+  public isActive!: boolean; 
+  public requestLimit!: number; 
 }
 
 @Injectable()
@@ -60,17 +60,17 @@ export class AppService {
       },
     }, {
       sequelize: this.sequelize,
-                modelName: 'URLMap',
-                indexes: [
-                    {
-                        unique: true,
-                        fields: ['shortURL'],
-                    },
-                    {
-                        unique: true,
-                        fields: ['aliasURL'],
-                    },
-                ],
+      modelName: 'URLMap',
+      indexes: [
+        {
+          unique: true,
+          fields: ['shortURL'],
+        },
+        {
+          unique: true,
+          fields: ['aliasURL'],
+        },
+      ],
     });
 
     // Synchronize the model with the database
@@ -86,6 +86,14 @@ export class AppService {
   private isValidUrl(url: string): boolean {
     const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
     return urlRegex.test(url);
+  }
+
+  private async findMapByShortUrlAndAlias(shortUrl: string): Promise<URLMap | null> {
+    let map = await this.urlMap.findOne({ where: { shortUrl } });
+    if (!map) {
+      map = await this.urlMap.findOne({ where: { aliasURL: shortUrl } });
+    }
+    return map;
   }
 
   async shortenUrl(dto: ShortenUrlDto): Promise<ShortenedUrlResponseDto> { // Default requestLimit to 0
@@ -115,14 +123,7 @@ export class AppService {
   }
 
   async getOriginalUrl(shortUrl: string, ipAddress: string): Promise<string> {
-    // First, try to find the shortURL in the URLMap model
-    let map = await this.urlMap.findOne({ where: { shortURL: shortUrl } });
-
-    // If not found, try to find it in the aliasURLs
-    if (!map) {
-      map = await this.urlMap.findOne({ where: { aliasURL: shortUrl } });
-    }
-
+    const map = await this.findMapByShortUrlAndAlias(shortUrl);
     if (!map) {
       throw new ShortUrlOrAliasNotFoundException();
     }
@@ -145,15 +146,7 @@ export class AppService {
   }
 
   async getStatistics(shortUrl: string): Promise<any> {
-    if (!shortUrl || shortUrl.trim() === '') {
-      throw new EmptyShortUrlException();
-    }
-    // Retrieve statistics for a short URL
-    let map = await this.urlMap.findOne({ where: { shortURL: shortUrl } });
-    // If not found, try to find it in the aliasURLs
-    if (!map) {
-      map = await this.urlMap.findOne({ where: { aliasURL: shortUrl } });
-    }
+    const map = await this.findMapByShortUrlAndAlias(shortUrl);
     if (!map) {
       throw new ShortUrlOrAliasNotFoundException();
     }
@@ -179,7 +172,7 @@ export class AppService {
 
     // Update the URLMap entry
     if (requestLimit !== undefined) {
-      if(requestLimit < 0){
+      if (requestLimit < 0) {
         throw new InvalidRequestLimitException();
       }
       urlMapEntry.requestLimit = requestLimit;
@@ -189,29 +182,25 @@ export class AppService {
     if (alias) {
       const existingMap = await this.urlMap.findOne({ where: { shortURL: alias } });
       if (existingMap) {
-          throw new AliasConflictException();
+        throw new AliasConflictException();
       }
       urlMapEntry.aliasURL = alias;
   }
 
     // Save changes
-    await urlMapEntry.save();
-
+   await urlMapEntry.save();
     this.logger.log(`URL updated: ${shortURL}`);
     return 'URL updated successfully';
   }
 
   async deleteUrlMap(shortURL: string): Promise<string> {
     const urlMapEntry = await this.urlMap.findOne({ where: { shortURL } });
-
     if (!urlMapEntry) {
       throw new ShortUrlNotFoundException();
     }
-
     // Set isActive to false
     urlMapEntry.isActive = false;
     await urlMapEntry.save();
-
     this.logger.log(`URL deleted: ${shortURL}`);
     return 'URL deleted successfully';
   }
