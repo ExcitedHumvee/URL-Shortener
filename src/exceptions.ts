@@ -52,3 +52,21 @@ export class InvalidRequestLimitException extends HttpException {
         super('Request limit must be greater than or equal to 0.', HttpStatus.BAD_REQUEST);
     }
 }
+
+export class EmptyShortUrlException extends HttpException {
+    constructor() {
+      super('Short URL cannot be empty or null', HttpStatus.BAD_REQUEST);
+    }
+}
+
+export class ShortUrlNotFoundException extends HttpException {
+    constructor() {
+      super('Short URL cannot be found', HttpStatus.BAD_REQUEST);
+    }
+}
+
+export class ShortUrlOrAliasNotFoundException extends HttpException {
+    constructor() {
+      super('Short URL or alias not found', HttpStatus.BAD_REQUEST);
+    }
+}

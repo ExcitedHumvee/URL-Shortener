@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Sequelize, DataTypes, Model } from 'sequelize';
 import { ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './app.dto';
-import { AliasConflictException, InvalidRequestLimitException, InvalidURLException } from './exceptions';
+import { AliasConflictException, EmptyShortUrlException, InvalidRequestLimitException, InvalidURLException, ShortUrlNotFoundException, ShortUrlOrAliasNotFoundException } from './exceptions';
 
 export class URLMap extends Model {
 	public id!: number;
@@ -140,7 +140,10 @@ export class AppService {
     return map.longURL;
   }
 
-  async getVisitorCount(shortUrl: string): Promise<any> {
+  async getStatistics(shortUrl: string): Promise<any> {
+    if (!shortUrl || shortUrl.trim() === '') {
+      throw new EmptyShortUrlException();
+    }
     // Retrieve statistics for a short URL
     let map = await this.urlMap.findOne({ where: { shortURL: shortUrl } });
     // If not found, try to find it in the aliasURLs
@@ -148,7 +151,7 @@ export class AppService {
       map = await this.urlMap.findOne({ where: { aliasURL: shortUrl } });
     }
     if (!map) {
-      throw new Error('Short URL or alias not found');
+      throw new ShortUrlOrAliasNotFoundException();
     }
     return map;
   }
@@ -165,11 +168,14 @@ export class AppService {
     const urlMapEntry = await this.urlMap.findOne({ where: { shortURL } });
 
     if (!urlMapEntry) {
-      throw new Error('URL not found');
+      throw new ShortUrlNotFoundException();
     }
 
     // Update the URLMap entry
     if (requestLimit !== undefined) {
+      if(requestLimit < 0){
+        throw new InvalidRequestLimitException();
+      }
       urlMapEntry.requestLimit = requestLimit;
     }
 
@@ -177,7 +183,7 @@ export class AppService {
     if (alias) {
       const existingMap = await this.urlMap.findOne({ where: { shortURL: alias } });
       if (existingMap) {
-          throw new Error('Alias URL cannot be the same as a short URL');
+          throw new AliasConflictException();
       }
       urlMapEntry.aliasURL = alias;
   }
