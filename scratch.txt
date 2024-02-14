@@ -35,11 +35,11 @@ to run test cases:
     end to end testing: npm run test:e2e
 
 TODO: 
-    E2E tests
-    refactoring file structure
     Transactonal db queries
+    refactoring file structure
+        Use Dependency Injection for Sequelize
     comments
-    advanced error handling of dto
+    advanced error handling of dto (Error Handling Middleware)
     create readme
     unit tests
     will not do: sonar lint analysis
@@ -53,3 +53,4 @@ feautures:
     logging
     logging different errors
     repeated code  
+    E2E tests

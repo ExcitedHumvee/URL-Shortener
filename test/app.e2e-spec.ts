@@ -255,11 +255,11 @@ describe('AppController (e2e)', () => {
     // First, create a mapping with an alias
     await request(app.getHttpServer())
       .post('/shortenUrl')
-      .send({ longUrl: 'https://existing.com', aliasURL: 'conflict', requestLimit: 10 })
+      .send({ longUrl: 'https://existing.com', aliasURL: 'conflict', requestLimit: 4 })
       .expect(201);
 
     // Then, attempt to create another mapping with the same alias
-    const dto = { longUrl: 'https://newurl.com', aliasURL: 'conflict', requestLimit: 10 };
+    const dto = { longUrl: 'https://newurl.com', aliasURL: 'conflict', requestLimit: 4 };
     const response = await request(app.getHttpServer())
       .post('/shortenUrl')
       .send(dto)
@@ -269,7 +269,22 @@ describe('AppController (e2e)', () => {
     expect(response.body.message).toBe('Validation error');
   });
 
-  
+  it('/shortenUrl (POST) Add Dummy Data', async () => {
+    await request(app.getHttpServer())
+      .post('/shortenUrl')
+      .send({ longUrl: 'https://google.com', aliasURL: 'goog', requestLimit: 4 })
+      .expect(201);
+    await request(app.getHttpServer())
+      .post('/shortenUrl')
+      .send({ longUrl: 'https://youtube.com', aliasURL: 'yoo', requestLimit: 4 })
+      .expect(201);  
+    await request(app.getHttpServer())
+      .post('/shortenUrl')
+      .send({ longUrl: 'https://amazon.com', aliasURL: 'ama', requestLimit: 4 })
+      .expect(201);  
+  });
+
+
 
   afterAll(async () => {
     await app.close();
