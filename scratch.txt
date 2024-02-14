@@ -35,7 +35,7 @@ to run test cases:
     end to end testing: npm run test:e2e
 
 TODO: 
-    Transactonal db queries
+    
     refactoring file structure
         Use Dependency Injection for Sequelize
     comments
@@ -54,3 +54,4 @@ feautures:
     logging different errors
     repeated code  
     E2E tests
+    Transactonal db queries
