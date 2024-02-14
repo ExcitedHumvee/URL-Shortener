@@ -19,6 +19,12 @@ COPY . .
 #without this docker throws an error node_sqlite3.node: invalid ELF header
 RUN npm rebuild sqlite3
 
+#unit test cases
+RUN npx jest
+
+#End 2 End tests
+RUN npm run test:e2e
+
 # Build the application
 RUN npm run build
 
