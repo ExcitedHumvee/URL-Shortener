@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Sequelize, DataTypes, Model } from 'sequelize';
+import { Sequelize, DataTypes, Model, Transaction } from 'sequelize';
 import { ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './dto';
 import { AliasConflictException, DeletedLinkException, EmptyShortUrlException, InvalidRequestLimitException, InvalidURLException, RequestLimitReachedException, ShortUrlNotFoundException, ShortUrlOrAliasNotFoundException } from './exceptions';
 
@@ -102,31 +102,48 @@ export class AppService {
     return map;
   }
 
-  async shortenUrl(dto: ShortenUrlDto): Promise<ShortenedUrlResponseDto> { // Default requestLimit to 0
+  async shortenUrl(dto: ShortenUrlDto): Promise<ShortenedUrlResponseDto> {
     if (!this.isValidUrl(dto.longUrl)) {
       throw new InvalidURLException();
     }
 
-    if (dto.requestLimit !=null && dto.requestLimit < 0) {
+    if (dto.requestLimit != null && dto.requestLimit < 0) {
       throw new InvalidRequestLimitException();
     }
-    // Check if aliasURL exists in shortURL
-    const existingMap = await this.urlMap.findOne({ where: { shortURL: dto.aliasURL } });
-    if (existingMap) {
-      throw new AliasConflictException();
+
+    let transaction: Transaction;
+    try {
+      // Begin transaction
+      transaction = await this.sequelize.transaction();
+
+      // Check if aliasURL exists in shortURL
+      const existingMap = await this.urlMap.findOne({ where: { shortURL: dto.aliasURL }, transaction });
+      if (existingMap) {
+        throw new AliasConflictException();
+      }
+
+      // Generate short URL and store mapping with requestLimit
+      const shortUrl = [...Array(5)].map(() => Math.random().toString(36)[2]).join('');
+      await this.urlMap.create({
+        shortURL: shortUrl,
+        longURL: dto.longUrl,
+        visitorCount: 0,
+        aliasURL: dto.aliasURL || null,
+        requestLimit: dto.requestLimit, // Include requestLimit
+      }, { transaction });
+
+      // Commit transaction
+      await transaction.commit();
+
+      this.logger.log(`URL shortened: ${dto.longUrl} -> ${shortUrl}`);
+      return { shortUrl };
+    } catch (error) {
+      // Rollback transaction on error
+      if (transaction) await transaction.rollback();
+      throw error;
     }
-    // Generate short URL and store mapping with requestLimit
-    const shortUrl = [...Array(5)].map(() => Math.random().toString(36)[2]).join('');
-    await this.urlMap.create({
-      shortURL: shortUrl,
-      longURL: dto.longUrl,
-      visitorCount: 0,
-      aliasURL: dto.aliasURL || null,
-      requestLimit: dto.requestLimit, // Include requestLimit
-    });
-    this.logger.log(`URL shortened: ${dto.longUrl} -> ${shortUrl}`);
-    return { shortUrl };
   }
+
 
   async getOriginalUrl(shortUrl: string, ipAddress: string): Promise<string> {
     const map = await this.findMapByShortUrlAndAlias(shortUrl);
@@ -168,57 +185,96 @@ export class AppService {
 
   async updateUrlMap(updateUrlDto: UpdateUrlDto): Promise<string> {
     const { shortURL, requestLimit, alias } = updateUrlDto;
-
-    // Find the URLMap entry
-    const urlMapEntry = await this.urlMap.findOne({ where: { shortURL } });
-
-    if (!urlMapEntry) {
-      throw new ShortUrlNotFoundException();
-    }
-
-    // Update the URLMap entry
-    if (requestLimit !== undefined) {
-      if (requestLimit < 0) {
-        throw new InvalidRequestLimitException();
-      }
-      urlMapEntry.requestLimit = requestLimit;
-    }
-
-    // Check if alias is provided and conflicts with existing shortURL
-    if (alias) {
-      const existingMap = await this.urlMap.findOne({ where: { shortURL: alias } });
-      if (existingMap) {
-        throw new AliasConflictException();
-      }
-      urlMapEntry.aliasURL = alias;
-  }
-
-    // Save changes
-   await urlMapEntry.save();
-    this.logger.log(`URL updated: ${shortURL}`);
-    return 'URL updated successfully';
-  }
-
-  async deleteUrlMap(shortURL: string): Promise<string> {
-    const urlMapEntry = await this.urlMap.findOne({ where: { shortURL } });
-    if (!urlMapEntry) {
-      throw new ShortUrlNotFoundException();
-    }
-    // Set isActive to false
-    urlMapEntry.isActive = false;
-    await urlMapEntry.save();
-    this.logger.log(`URL deleted: ${shortURL}`);
-    return 'URL deleted successfully';
-  }
-
-  async deleteAllUrlMaps(): Promise<string> {
+    let transaction: Transaction;
     try {
-      await this.urlMap.destroy({ truncate: true });
-      this.logger.log('All URL maps deleted successfully');
-      return 'All URL maps deleted successfully';
+      // Begin transaction
+      transaction = await this.sequelize.transaction();
+
+      const urlMapEntry = await this.urlMap.findOne({ where: { shortURL }, transaction }); // Fix here
+      if (!urlMapEntry) {
+        throw new ShortUrlNotFoundException();
+      }
+
+      // Update the URLMap entry
+      if (requestLimit !== undefined) {
+        if (requestLimit < 0) {
+          throw new InvalidRequestLimitException();
+        }
+        urlMapEntry.requestLimit = requestLimit;
+      }
+
+      // Check if alias is provided and conflicts with existing shortURL
+      if (alias) {
+        const existingMap = await this.urlMap.findOne({ where: { shortURL: alias }, transaction }); // Fix here
+        if (existingMap) {
+          throw new AliasConflictException();
+        }
+        urlMapEntry.aliasURL = alias;
+      }
+
+      // Save changes
+      await urlMapEntry.save({ transaction });
+
+      // Commit transaction
+      await transaction.commit();
+
+      this.logger.log(`URL updated: ${shortURL}`);
+      return 'URL updated successfully';
     } catch (error) {
-      this.logger.error(`Error deleting URL maps: ${error.message}`);
+      // Rollback transaction on error
+      if (transaction) await transaction.rollback();
       throw error;
     }
   }
+
+  async deleteUrlMap(shortURL: string): Promise<string> {
+    let transaction: Transaction;
+    try {
+      // Begin transaction
+      transaction = await this.sequelize.transaction();
+
+      const urlMapEntry = await this.urlMap.findOne({ where: { shortURL }, transaction }); // Fix here
+      if (!urlMapEntry) {
+        throw new ShortUrlNotFoundException();
+      }
+
+      // Set isActive to false
+      urlMapEntry.isActive = false;
+
+      // Save changes
+      await urlMapEntry.save({ transaction });
+
+      // Commit transaction
+      await transaction.commit();
+
+      this.logger.log(`URL deleted: ${shortURL}`);
+      return 'URL deleted successfully';
+    } catch (error) {
+      // Rollback transaction on error
+      if (transaction) await transaction.rollback();
+      throw error;
+    }
+  }
+
+  async deleteAllUrlMaps(): Promise<string> {
+    let transaction: Transaction;
+    try {
+      // Begin transaction
+      transaction = await this.sequelize.transaction();
+
+      // Delete all records from the URLMap table
+      await this.urlMap.destroy({ truncate: true, transaction });
+
+      // Commit transaction
+      await transaction.commit();
+
+      this.logger.log('All URL maps deleted successfully');
+      return 'All URL maps deleted successfully';
+    } catch (error) {
+      // Rollback transaction on error
+      if (transaction) await transaction.rollback();
+      this.logger.error(`Error deleting URL maps: ${error.message}`);
+      throw error;
+    }
+}
 }
