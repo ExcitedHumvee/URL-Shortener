@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Res, HttpStatus } from
 import { AppService, URLMap } from './app.service';
 import { Response } from 'express';
 import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { DeleteUrlDto, GetAllURLsResponseDto, GetStatsResponseDto, ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './dto';
+import { DeleteUrlDto, GetStatsResponseDto, ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './dto';
 
 @Controller()
 @ApiTags('URL Map Controller')
@@ -30,11 +30,11 @@ export class AppController {
   @ApiResponse({ 
     status: 200,
     description: 'Retrieved all URLs successfully.',
-    type: [GetAllURLsResponseDto],
+    type: [GetStatsResponseDto],
   })
-  async getAllURLs(): Promise<GetAllURLsResponseDto[]> {
+  async getAllURLs(): Promise<GetStatsResponseDto[]> {
     const urls = await this.appService.getAllURLs();
-    return urls.map(url => new GetAllURLsResponseDto(url)); // Assuming GetAllURLsResponseDto has constructor that accepts URLMap instance
+    return urls.map(url => new GetStatsResponseDto(url)); // Assuming GetAllURLsResponseDto has constructor that accepts URLMap instance
 }
 
   @Get(':shortUrl/statistics') 

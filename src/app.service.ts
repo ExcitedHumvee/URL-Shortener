@@ -134,14 +134,14 @@ export class AppService {
       throw new ShortUrlOrAliasNotFoundException();
     }
 
-    // Check if requestLimit is set and if the visitorCount has reached the limit
-    if (map.requestLimit && map.visitorCount >= map.requestLimit) {
-      throw new RequestLimitReachedException();
-    }
-
     // Check if the URL is active
     if (!map.isActive) {
       throw new DeletedLinkException();
+    }
+
+    // Check if requestLimit is set and if the visitorCount has reached the limit
+    if (map.requestLimit && map.visitorCount >= map.requestLimit) {
+      throw new RequestLimitReachedException();
     }
 
     // Update statistics

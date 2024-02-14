@@ -35,12 +35,15 @@ to run test cases:
     end to end testing: npm run test:e2e
 
 TODO: 
+    E2E tests
+    refactoring file structure
+    Transactonal db queries
+    comments
+    advanced error handling of dto
     create readme
     unit tests
-    refactoring file structure
-    advanced error handling of dto
     will not do: sonar lint analysis
-    E2E tests
+    
 
 feautures:
     DB checking Database Constraints: Leverage database features such as unique constraints, foreign key constraints, check constraints, and indexes to enforce data integrity at the database level.
