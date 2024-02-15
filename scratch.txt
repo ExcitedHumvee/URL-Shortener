@@ -35,9 +35,7 @@ to run test cases:
     end to end testing: npm run test:e2e
 
 TODO: 
-    Use Dependency Injection for Sequelize
     unit tests
-    will not do: sonar lint analysis
     
 
 
