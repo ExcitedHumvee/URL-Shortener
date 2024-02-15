@@ -12,7 +12,12 @@ async function bootstrap() {
     .setContact('Stany Desa','https://github.com/ExcitedHumvee','35200248+ExcitedHumvee@users.noreply.github.com')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  const options = {
+    swaggerOptions: {
+      baseUrl: 'http://localhost:3000/', // Define your base URL here
+    },
+  };
+  SwaggerModule.setup('api', app, document, options);
   
   await app.listen(3000);
 }

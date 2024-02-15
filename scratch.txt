@@ -35,23 +35,17 @@ to run test cases:
     end to end testing: npm run test:e2e
 
 TODO: 
+    comments 
     
     refactoring file structure
         Use Dependency Injection for Sequelize
-    comments
     advanced error handling of dto (Error Handling Middleware)
-    create readme
     unit tests
     will not do: sonar lint analysis
     
 
-feautures:
-    DB checking Database Constraints: Leverage database features such as unique constraints, foreign key constraints, check constraints, and indexes to enforce data integrity at the database level.
-    proper input and output of each api
-    validation inside the apis
-    proper errors should be thrown to frontend
-    logging
-    logging different errors
-    repeated code  
-    E2E tests
-    Transactonal db queries
+
+
+
+
+

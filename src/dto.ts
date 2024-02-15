@@ -8,7 +8,7 @@ export class ShortenUrlDto {
   @ApiProperty({ required: false })
   aliasURL?: string;
 
-  @ApiProperty({ required: false, default: 0 })
+  @ApiProperty({ required: false, default: 10 })
   requestLimit?: number;
 }
 
@@ -19,7 +19,7 @@ export class UpdateUrlDto {
   @ApiProperty({ description: 'Request limit', required: false, default: 0 })
   requestLimit?: number = 0;
 
-  @ApiProperty({ description: 'Alias URL', required: false, default: null })
+  @ApiProperty({ description: 'Alias URL', required: false, default: "" })
   alias?: string = null;
 }
 
