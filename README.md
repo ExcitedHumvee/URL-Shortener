@@ -59,7 +59,7 @@ The URL Shortening API is a versatile service designed to simplify URL managemen
     ```
 6. Start the application with:
     ```
-    npm run start start
+    npm run start
     ```
 7. Go to [http://localhost:3000/api](http://localhost:3000/api) in the browser to access Swagger UI.
 8. Build Docker image:
