@@ -1,18 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Sequelize, DataTypes, Model, Transaction } from 'sequelize';
-import { ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './dto';
-import { AliasConflictException, DeletedLinkException, InvalidRequestLimitException, InvalidURLException, RequestLimitReachedException, ShortUrlNotFoundException, ShortUrlOrAliasNotFoundException } from './exceptions';
-
-// Define the URLMap model
-export class URLMap extends Model {
-  public id!: number;
-  public shortURL!: string;
-  public longURL!: string;
-  public visitorCount!: number;
-  public aliasURL!: string | null;
-  public isActive!: boolean;
-  public requestLimit!: number;
-}
+import { Sequelize, Transaction } from 'sequelize';
+import { ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from '../dto';
+import { AliasConflictException, DeletedLinkException, InvalidRequestLimitException, InvalidURLException, RequestLimitReachedException, ShortUrlNotFoundException, ShortUrlOrAliasNotFoundException } from '../exceptions';
+import { URLMap, initializeURLMapModel } from '../models/url-map.model';
 
 @Injectable()
 export class AppService {
@@ -28,50 +18,8 @@ export class AppService {
       logging: false,
     });
 
-    // Define URLMap model
-    URLMap.init({
-      shortURL: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      longURL: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      visitorCount: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-      },
-      aliasURL: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        unique: true,
-      },
-      isActive: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: true,
-      },
-      requestLimit: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-      },
-    }, {
-      sequelize: this.sequelize,
-      modelName: 'URLMap',
-      indexes: [{
-          unique: true,
-          fields: ['shortURL'],
-        },
-        {
-          unique: true,
-          fields: ['aliasURL'],
-        },
-      ],
-    });
+    // Initialize URLMap model
+    initializeURLMapModel(this.sequelize);
 
     // Synchronize the model with the database
     this.sequelize.sync();
@@ -381,3 +329,5 @@ export class AppService {
     }
   }
 }
+export { URLMap };
+

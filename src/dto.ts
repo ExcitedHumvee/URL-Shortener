@@ -3,7 +3,7 @@
  * It includes DTOs for creating, updating, and deleting URLs, as well as DTOs for response payloads including shortened URLs and statistics.
  */
 import { ApiProperty } from '@nestjs/swagger';
-import { URLMap } from './app.service';
+import { URLMap } from './services/app.service';
 
 export class ShortenUrlDto {
   @ApiProperty({ example: 'https://facebook.com', description: 'The long URL to shorten' })

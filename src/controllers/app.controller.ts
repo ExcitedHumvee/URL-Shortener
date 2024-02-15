@@ -3,10 +3,10 @@
  * updating and deleting URL mappings.
  */
 import { Controller, Get, Post, Put, Delete, Body, Param, Res, HttpStatus } from '@nestjs/common';
-import { AppService, URLMap } from './app.service';
+import { AppService, URLMap } from '../services/app.service';
 import { Response } from 'express';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { DeleteUrlDto, GetStatsResponseDto, ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from './dto';
+import { DeleteUrlDto, GetStatsResponseDto, ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from '../dto';
 
 @Controller()
 @ApiTags('URL Map Controller')
