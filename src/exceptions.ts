@@ -14,7 +14,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
 
         //generic status and message being set, not good practice
         let status = HttpStatus.BAD_REQUEST;
-        let message=exception.message;
+        let message = exception.message;
 
         // let message = 'Internal server error';
         // if (exception instanceof AliasConflictException) {
@@ -62,29 +62,29 @@ export class InvalidRequestLimitException extends HttpException {
 
 export class EmptyShortUrlException extends HttpException {
     constructor() {
-      super('Short URL cannot be empty or null', HttpStatus.BAD_REQUEST);
+        super('Short URL cannot be empty or null', HttpStatus.BAD_REQUEST);
     }
 }
 
 export class ShortUrlNotFoundException extends HttpException {
     constructor() {
-      super('Short URL cannot be found', HttpStatus.BAD_REQUEST);
+        super('Short URL cannot be found', HttpStatus.BAD_REQUEST);
     }
 }
 
 export class ShortUrlOrAliasNotFoundException extends HttpException {
     constructor() {
-      super('Short URL or alias not found', HttpStatus.BAD_REQUEST);
+        super('Short URL or alias not found', HttpStatus.BAD_REQUEST);
     }
 }
 
 export class RequestLimitReachedException extends HttpException {
     constructor() {
-      super('Request limit reached for this URL', HttpStatus.BAD_REQUEST);
+        super('Request limit reached for this URL', HttpStatus.BAD_REQUEST);
     }
 }
 export class DeletedLinkException extends HttpException {
     constructor() {
-      super('This link has been deleted', HttpStatus.BAD_REQUEST);
+        super('This link has been deleted', HttpStatus.BAD_REQUEST);
     }
 }

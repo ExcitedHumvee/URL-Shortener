@@ -11,11 +11,11 @@ import { DeleteUrlDto, GetStatsResponseDto, ShortenUrlDto, ShortenedUrlResponseD
 @Controller()
 @ApiTags('URL Map Controller')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) { }
 
   @Get()
   @ApiOperation({ summary: 'Get a welcome message' })
-  @ApiResponse({ 
+  @ApiResponse({
     status: 200,
     description: 'Returns the welcome message.',
     content: {
@@ -28,13 +28,13 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Post('shortenUrl') 
+  @Post('shortenUrl')
   @ApiOperation({ summary: 'Shorten a URL' })
-  @ApiBody({ 
+  @ApiBody({
     type: ShortenUrlDto,
     description: 'Object containing the URL to be shortened. It must have a "url" property which is a string representing the original URL. Optionally, it can have a "requestLimit" property indicating the limit on the number of requests for the shortened URL. It can also include an "aliasURL" property, which is a string representing a custom alias for the shortened URL.'
   })
-  @ApiResponse({ 
+  @ApiResponse({
     status: 201,
     description: 'The URL has been successfully shortened.',
     type: ShortenedUrlResponseDto,
@@ -46,21 +46,21 @@ export class AppController {
 
   @Get('urlMaps')
   @ApiOperation({ summary: 'Get all shortened URLs with their statistics' })
-  @ApiResponse({ 
+  @ApiResponse({
     status: 200,
     description: 'Retrieved all URLs successfully.',
     type: [GetStatsResponseDto],
   })
   async getAllURLs(): Promise<GetStatsResponseDto[]> {
     const urls = await this.appService.getAllURLs();
-    return urls.map(url => new GetStatsResponseDto(url)); 
-}
+    return urls.map(url => new GetStatsResponseDto(url));
+  }
 
-  @Get(':shortUrl/statistics') 
+  @Get(':shortUrl/statistics')
   @ApiOperation({ summary: 'Get statistics for a shortened URL' })
-  @ApiParam({ 
-    name: 'shortUrl', 
-    description: 'The short URL or alias for which statistics are requested' 
+  @ApiParam({
+    name: 'shortUrl',
+    description: 'The short URL or alias for which statistics are requested'
   })
   @ApiResponse({
     status: 200,
@@ -92,12 +92,12 @@ export class AppController {
     // Many ways of efficient storage of ip address. Quick way is to create another table and link it with shortURL primary key, could be slower
     // Like create another 'Visits' Table with shortURL id, ipAddress, timestamp etc.
     // One more way is to store array of visitors in URLMap table itself
-    const ipAddress = res.req.ip; 
+    const ipAddress = res.req.ip;
     console.log(`Incoming IP address: ${ipAddress}`);
-    const targetUrl = await this.appService.getOriginalUrl(shortUrl,ipAddress) as string;
+    const targetUrl = await this.appService.getOriginalUrl(shortUrl, ipAddress) as string;
     res.status(HttpStatus.FOUND).redirect(targetUrl);
   }
-  
+
   @Put('urlMap')
   @ApiOperation({ summary: 'Update a URL map' })
   @ApiBody({ type: UpdateUrlDto, description: 'Object containing the updated URL map details.' })
@@ -116,7 +116,7 @@ export class AppController {
 
   @Delete('urlMaps/deleteAll')
   @ApiOperation({ summary: 'Delete all URL maps. Warning: all data in DB will be truncated.' })
-  @ApiResponse({ 
+  @ApiResponse({
     status: 200,
     description: 'All URL maps deleted successfully',
   })
