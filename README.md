@@ -30,15 +30,6 @@ The URL Shortening API is a versatile service designed to simplify URL managemen
 - Persistence of data after app shutdown
 - Asynchronous and non-blocking API calls for scalability
 
-## Further Improvements
-- Introduce another table to record visitors' IP addresses, timestamps, etc.
-- Utilize linting tools to ensure code quality
-- Increase unit test coverage
-- Conduct performance testing to optimize performance
-- Enhance database query efficiency
-- Perform load and concurrency testing to assess scalability
-- Use a proxy server for testing to track incoming users' IP addresses for analytics
-
 ## Getting Started
 
 1. Clone the repository from [GitHub](https://github.com/ExcitedHumvee/URL-Shortener) with:
@@ -78,3 +69,17 @@ The URL Shortening API is a versatile service designed to simplify URL managemen
     docker ps
     ```
 
+## Further Improvements
+- Introduce another table to record visitors' IP addresses, timestamps, etc.
+- Utilize linting tools to ensure code quality
+- Increase unit test coverage
+- Conduct performance testing to optimize performance
+- Enhance database query efficiency
+- Perform load and concurrency testing to assess scalability
+- Use a proxy server for testing to track incoming users' IP addresses for analytics
+
+## Contributing
+Contributions are welcome!
+
+## License
+This project is licensed under the [MIT License](LICENSE).
