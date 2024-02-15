@@ -3,16 +3,20 @@ import { BaseExceptionFilter } from '@nestjs/core';
 import { Response } from 'express';
 import { HttpException } from '@nestjs/common';
 
+/**
+ * This file defines custom exception filters and exception classes for handling various error scenarios in the application.
+ */
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
     catch(exception: any, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
 
+        //generic status and message being set, not good practice
         let status = HttpStatus.BAD_REQUEST;
-        // let message = 'Internal server error';
         let message=exception.message;
 
+        // let message = 'Internal server error';
         // if (exception instanceof AliasConflictException) {
         //     status = HttpStatus.BAD_REQUEST;
         //     message = exception.message;
@@ -35,6 +39,9 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     }
 }
 
+/**
+ * Custom exception classes
+ */
 export class InvalidURLException extends HttpException {
     constructor() {
         super('Invalid URL format', HttpStatus.BAD_REQUEST);
