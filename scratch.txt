@@ -35,9 +35,6 @@ to run test cases:
     end to end testing: npm run test:e2e
 
 TODO: 
-    comments 
-    beautify code
-    
     refactoring file structure
         Use Dependency Injection for Sequelize
     advanced error handling of dto (Error Handling Middleware)
