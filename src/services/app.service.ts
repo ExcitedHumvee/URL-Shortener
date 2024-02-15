@@ -81,13 +81,14 @@ export class AppService {
    * @throws InvalidRequestLimitException if the provided request limit is invalid.
    */
   async shortenUrl(dto: ShortenUrlDto): Promise < ShortenedUrlResponseDto > {
-    if (!this.isValidUrl(dto.longUrl)) {
-      throw new Exceptions.InvalidURLException();
-    }
+    // Commented out as there is validations on dto 
+    // if (!this.isValidUrl(dto.longUrl)) {
+    //   throw new Exceptions.InvalidURLException();
+    // }
 
-    if (dto.requestLimit != null && dto.requestLimit < 0) {
-      throw new Exceptions.InvalidRequestLimitException();
-    }
+    // if (dto.requestLimit != null && dto.requestLimit < 0) {
+    //   throw new Exceptions.InvalidRequestLimitException();
+    // }
 
     let transaction: Transaction;
     try {

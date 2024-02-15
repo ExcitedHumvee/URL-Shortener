@@ -36,7 +36,6 @@ to run test cases:
 
 TODO: 
     Use Dependency Injection for Sequelize
-    advanced error handling of dto (Error Handling Middleware)
     unit tests
     will not do: sonar lint analysis
     

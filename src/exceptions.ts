@@ -16,6 +16,23 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     let status = HttpStatus.BAD_REQUEST;
     let message = exception.message;
 
+
+    if (exception.response && exception.response.message) {
+      message = exception.response.message;
+    } else if (exception.errors && exception.errors.length >= 1) {
+      message = exception.errors.map((error: any) => error.message).join(' ');
+    }
+
+    // if (exception.response && exception.response.message) {
+    //   message = exception.response.message;
+    // }else if(exception.errors && exception.errors.length>=1){
+    //   message="";
+    //   exception.errors.forEach(element => {
+    //     message=message+element.message+" ";
+    //   });
+    // }
+    //need exception.response.message
+
     // let message = 'Internal server error';
     // if (exception instanceof AliasConflictException) {
     //     status = HttpStatus.BAD_REQUEST;

@@ -237,7 +237,7 @@ describe('AppController (e2e)', () => {
       .expect(400);
 
     console.log('/shortenUrl (POST) Invalid URL Response:', response.body);
-    expect(response.body.message).toBe('Invalid URL format');
+    expect(response.body.message).toStrictEqual(["Invalid URL format"]);
   });
 
   it('/shortenUrl (POST) with negative request limit', async () => {
@@ -248,7 +248,7 @@ describe('AppController (e2e)', () => {
       .expect(400);
 
     console.log('/shortenUrl (POST) Negative Request Limit Response:', response.body);
-    expect(response.body.message).toBe('Request limit must be greater than or equal to 0.');
+    expect(response.body.message).toStrictEqual(["Request limit must be greater than or equal to 0"]);
   });
 
   it('/shortenUrl (POST) with conflicting alias URL', async () => {
@@ -266,7 +266,7 @@ describe('AppController (e2e)', () => {
       .expect(400);
 
     console.log('/shortenUrl (POST) Alias Conflict Response:', response.body);
-    expect(response.body.message).toBe('Validation error');
+    expect(response.body.message).toBe('aliasURL must be unique');
   });
 
   it('/shortenUrl (POST) Add Dummy Data', async () => {

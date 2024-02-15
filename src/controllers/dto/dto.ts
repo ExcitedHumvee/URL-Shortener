@@ -4,15 +4,21 @@
  */
 import { ApiProperty } from '@nestjs/swagger';
 import { URLMap } from '../../services/app.service';
+import { IsUrl, IsOptional, IsInt, Min } from 'class-validator';
 
 export class ShortenUrlDto {
   @ApiProperty({ example: 'https://facebook.com', description: 'The long URL to shorten' })
+  @IsUrl({}, { message: 'Invalid URL format' })
   longUrl: string;
 
   @ApiProperty({ required: false })
+  @IsOptional()
   aliasURL?: string;
 
   @ApiProperty({ required: false, default: 10 })
+  @IsOptional()
+  @IsInt({ message: 'Request limit must be an integer' })
+  @Min(0, { message: 'Request limit must be greater than or equal to 0' })
   requestLimit?: number;
 }
 
@@ -21,9 +27,13 @@ export class UpdateUrlDto {
   shortURL: string;
 
   @ApiProperty({ description: 'Request limit', required: false, default: 0 })
+  @IsOptional()
+  @IsInt({ message: 'Request limit must be an integer' })
+  @Min(0, { message: 'Request limit must be greater than or equal to 0' })
   requestLimit?: number = 0;
 
   @ApiProperty({ description: 'Alias URL', required: false, default: "" })
+  @IsOptional()
   alias?: string = null;
 }
 
