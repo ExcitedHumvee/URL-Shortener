@@ -31,6 +31,7 @@ The URL Shortening API is a versatile service designed to simplify URL managemen
 - Asynchronous and non-blocking API calls for scalability
 
 ## Further Improvements
+- Introduce another Table to record Visitors' ip address, timestamp etc.
 - Increase unit test coverage
 - Performance testing for optimization
 - Enhance DB query efficiency

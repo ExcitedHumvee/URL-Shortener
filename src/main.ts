@@ -14,7 +14,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   const options = {
     swaggerOptions: {
-      baseUrl: 'http://localhost:3000/', // Define your base URL here
+      baseUrl: 'http://localhost:3000/', //base URL here
     },
   };
   SwaggerModule.setup('api', app, document, options);

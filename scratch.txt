@@ -36,6 +36,7 @@ to run test cases:
 
 TODO: 
     comments 
+    beautify code
     
     refactoring file structure
         Use Dependency Injection for Sequelize

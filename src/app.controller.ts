@@ -1,3 +1,7 @@
+/**
+ * Controller handling URL mapping operations such as shortening URLs, retrieving statistics, redirecting to original URLs,
+ * updating and deleting URL mappings.
+ */
 import { Controller, Get, Post, Put, Delete, Body, Param, Res, HttpStatus } from '@nestjs/common';
 import { AppService, URLMap } from './app.service';
 import { Response } from 'express';
@@ -49,14 +53,14 @@ export class AppController {
   })
   async getAllURLs(): Promise<GetStatsResponseDto[]> {
     const urls = await this.appService.getAllURLs();
-    return urls.map(url => new GetStatsResponseDto(url)); // Assuming GetAllURLsResponseDto has constructor that accepts URLMap instance
+    return urls.map(url => new GetStatsResponseDto(url)); 
 }
 
   @Get(':shortUrl/statistics') 
   @ApiOperation({ summary: 'Get statistics for a shortened URL' })
   @ApiParam({ 
     name: 'shortUrl', 
-    description: 'The short URL or alias for which statistics are requested' // Description for the shortUrl parameter
+    description: 'The short URL or alias for which statistics are requested' 
   })
   @ApiResponse({
     status: 200,
@@ -65,7 +69,7 @@ export class AppController {
   })
   async getStats(@Param('shortUrl') shortUrl: string): Promise<GetStatsResponseDto> {
     const stats = await this.appService.getStatistics(shortUrl);
-    return new GetStatsResponseDto(stats); // Assuming GetStatsResponseDto has constructor that accepts URLMap instance
+    return new GetStatsResponseDto(stats);
   }
 
   @Get(':shortUrl')
@@ -81,7 +85,14 @@ export class AppController {
   })
   async redirectToOriginal(@Param('shortUrl') shortUrl: string, @Res() res: Response) {
     console.log("inside redirectToOriginal controller");
-    const ipAddress = res.req.ip; // Access the IP address from the request object
+    // Access the IP address from the request object
+    // This can be used for analytics later (by storing ip address in the DB)
+    // We can get data such as unique users, locations of people, geolocation, also for security(ddos)
+    // Have to be careful about compliance laws, storing ip addresses
+    // Many ways of efficient storage of ip address. Quick way is to create another table and link it with shortURL primary key, could be slower
+    // Like create another 'Visits' Table with shortURL id, ipAddress, timestamp etc.
+    // One more way is to store array of visitors in URLMap table itself
+    const ipAddress = res.req.ip; 
     console.log(`Incoming IP address: ${ipAddress}`);
     const targetUrl = await this.appService.getOriginalUrl(shortUrl,ipAddress) as string;
     res.status(HttpStatus.FOUND).redirect(targetUrl);
