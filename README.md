@@ -15,14 +15,14 @@ The URL Shortening API is a versatile service designed to simplify URL managemen
 - Shorten any URL with automatic generation of shortened URL
 - Set custom alias URLs for personalized shortcuts
 - Add request limits to URLs, blocking access after visitor count reaches limit
-- Delete URLs with appropriate handling of blocked requests
-- Update alias URL and request limits dynamically
+- API to delete URLs with appropriate handling of blocked requests
+- Can update alias URL and request limits dynamically
 - API to provide statistics such as visitor count
 - Conforms to OpenAPI standards with APIs accessible from Swagger UI
 - Enforces data integrity with DB level checks, constraints, and indexing for fast queries
 - Transactions for atomicity and consistency in database operations
-- Validation of API calls from the service layer with DTOs and validation annotations
-- Proper error handling with appropriate HTTP response codes
+- Validation of API calls from the service layer and DTO layer using validation annotations
+- Proper error handling (using Middleware) with appropriate HTTP response codes
 - Logging of essential data for monitoring and debugging
 - End-to-End (E2E) tests to ensure complete flow and error handling
 - Dockerized application for easy deployment
@@ -31,12 +31,12 @@ The URL Shortening API is a versatile service designed to simplify URL managemen
 - Asynchronous and non-blocking API calls for scalability
 
 ## Further Improvements
-- Introduce another Table to record Visitors' ip address, timestamp etc.
-- Check code quality with linting tools
+- Introduce another table to record visitors' IP addresses, timestamps, etc.
+- Utilize linting tools to ensure code quality
 - Increase unit test coverage
-- Performance testing for optimization
-- Enhance DB query efficiency
-- Load and concurrency testing for scalability assessment
+- Conduct performance testing to optimize performance
+- Enhance database query efficiency
+- Perform load and concurrency testing to assess scalability
 - Use a proxy server for testing to track incoming users' IP addresses for analytics
 
 ## Getting Started
@@ -45,7 +45,7 @@ The URL Shortening API is a versatile service designed to simplify URL managemen
     ```
     git clone https://github.com/ExcitedHumvee/URL-Shortener
     ```
-2. Navigate to the project folder
+2. Navigate into the project folder
 3. Install dependencies with:
     ```
     sudo npm install
