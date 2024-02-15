@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Sequelize, Transaction } from 'sequelize';
 import { ShortenUrlDto, ShortenedUrlResponseDto, UpdateUrlDto } from '../controllers/dto/dto';
-import { AliasConflictException, DeletedLinkException, InvalidRequestLimitException, InvalidURLException, RequestLimitReachedException, ShortUrlNotFoundException, ShortUrlOrAliasNotFoundException } from '../exceptions';
+import * as Exceptions from '../exceptions';
 import { URLMap, initializeURLMapModel } from '../models/url-map.model';
 
 @Injectable()
@@ -82,11 +82,11 @@ export class AppService {
    */
   async shortenUrl(dto: ShortenUrlDto): Promise < ShortenedUrlResponseDto > {
     if (!this.isValidUrl(dto.longUrl)) {
-      throw new InvalidURLException();
+      throw new Exceptions.InvalidURLException();
     }
 
     if (dto.requestLimit != null && dto.requestLimit < 0) {
-      throw new InvalidRequestLimitException();
+      throw new Exceptions.InvalidRequestLimitException();
     }
 
     let transaction: Transaction;
@@ -102,7 +102,7 @@ export class AppService {
         transaction
       });
       if (existingMap) {
-        throw new AliasConflictException();
+        throw new Exceptions.AliasConflictException();
       }
 
       // Generate short URL and store mapping with requestLimit
@@ -145,17 +145,17 @@ export class AppService {
     //Check if shortUrl is present in DB
     const map = await this.findMapByShortUrlAndAlias(shortUrl);
     if (!map) {
-      throw new ShortUrlOrAliasNotFoundException();
+      throw new Exceptions.ShortUrlOrAliasNotFoundException();
     }
 
     // Check if the URL is active
     if (!map.isActive) {
-      throw new DeletedLinkException();
+      throw new Exceptions.DeletedLinkException();
     }
 
     // Check if requestLimit is set and if the visitorCount has reached the limit
     if (map.requestLimit && map.visitorCount >= map.requestLimit) {
-      throw new RequestLimitReachedException();
+      throw new Exceptions.RequestLimitReachedException();
     }
 
     // Update statistics
@@ -174,7 +174,7 @@ export class AppService {
   async getStatistics(shortUrl: string): Promise < any > {
     const map = await this.findMapByShortUrlAndAlias(shortUrl);
     if (!map) {
-      throw new ShortUrlOrAliasNotFoundException();
+      throw new Exceptions.ShortUrlOrAliasNotFoundException();
     }
     this.logger.log(`Retrieved statistics for URL: ${shortUrl}`);
     return map;
@@ -216,13 +216,13 @@ export class AppService {
         transaction
       });
       if (!urlMapEntry) {
-        throw new ShortUrlNotFoundException();
+        throw new Exceptions.ShortUrlNotFoundException();
       }
 
       // Update the URLMap entry
       if (requestLimit !== undefined) {
         if (requestLimit < 0) {
-          throw new InvalidRequestLimitException();
+          throw new Exceptions.InvalidRequestLimitException();
         }
         urlMapEntry.requestLimit = requestLimit;
       }
@@ -236,7 +236,7 @@ export class AppService {
           transaction
         });
         if (existingMap) {
-          throw new AliasConflictException();
+          throw new Exceptions.AliasConflictException();
         }
         urlMapEntry.aliasURL = alias;
       }
@@ -277,7 +277,7 @@ export class AppService {
         transaction
       });
       if (!urlMapEntry) {
-        throw new ShortUrlNotFoundException();
+        throw new Exceptions.ShortUrlNotFoundException();
       }
 
       // Set isActive to false

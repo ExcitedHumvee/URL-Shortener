@@ -35,8 +35,7 @@ to run test cases:
     end to end testing: npm run test:e2e
 
 TODO: 
-    refactoring file structure
-        Use Dependency Injection for Sequelize
+    Use Dependency Injection for Sequelize
     advanced error handling of dto (Error Handling Middleware)
     unit tests
     will not do: sonar lint analysis
