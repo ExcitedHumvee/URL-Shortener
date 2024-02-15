@@ -1,3 +1,7 @@
+/**
+ * This file defines Data Transfer Objects (DTOs) used for request and response payloads in URL shortening operations.
+ * It includes DTOs for creating, updating, and deleting URLs, as well as DTOs for response payloads including shortened URLs and statistics.
+ */
 import { ApiProperty } from '@nestjs/swagger';
 import { URLMap } from './app.service';
 
