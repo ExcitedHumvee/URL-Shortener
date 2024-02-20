@@ -70,6 +70,7 @@ The URL Shortening API is a versatile service designed to simplify URL managemen
     ```
 
 ## Further Improvements
+- Ensure sensitive data, such as visitor counts, is encrypted when stored in the database to prevent unauthorized access in case of data breaches.
 - Introduce another table to record visitors' IP addresses, timestamps, etc.
 - Utilize linting tools to ensure code quality
 - Increase unit test coverage
@@ -77,6 +78,12 @@ The URL Shortening API is a versatile service designed to simplify URL managemen
 - Enhance database query efficiency
 - Perform load and concurrency testing to assess scalability
 - Use a proxy server for testing to track incoming users' IP addresses for analytics
+- Implement rate limiting to prevent abuse of the API by limiting the number of requests a user can make within a certain time frame.
+- Implement security measures such as input validation to prevent injection attacks like SQL injection, NoSQL injection, and Cross-Site Scripting (XSS).
+- Enforce HTTPS for all communications between clients and the server to encrypt data in transit and prevent man-in-the-middle attacks.
+- Enhance security by implementing a Content Security Policy (CSP) to mitigate the risk of XSS attacks. Specify which sources of content are allowed to be loaded by the browser, preventing unauthorized execution of malicious scripts.
+- Set security headers such as X-Content-Type-Options, X-Frame-Options, and X-XSS-Protection to enhance the security of your application and prevent common web vulnerabilities.
+
 
 ## Contributing
 Contributions are welcome!
